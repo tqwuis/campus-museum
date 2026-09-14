@@ -4,19 +4,33 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Campus Museum</title>
+    <link rel="stylesheet" href="styles.css">
   </head>
-  <body>
-    <h1>나만의 캠퍼스 핫스팟</h1>
-    <p>공부하다 잠시 숨을 돌리고 싶을 때 찾아가는 세 장소를 소개합니다.</p>
+  <body class="home-page">
+    <div class="site-shell">
+      <header class="site-header">
+        <p class="eyebrow">CAMPUS MUSEUM / 01</p>
+        <h1>나만의 캠퍼스 핫스팟</h1>
+        <p class="lead">공부하다 잠시 숨을 돌리고 싶을 때 찾아가는 세 장소를 소개합니다.</p>
+      </header>
 
-    <h2>탐험할 장소</h2>
-    <ol>
-      <img src="images/cafe.jpg" width="400" height="300" alt="카페 멘사의 편안한 앉는 자리">
-      <li><a href="cafeMensa.html">편하게 먹을 수 있는 카페 멘사<br><br></a></li>
-      <img src="images/k2F.jpg" width="400" height="300" alt="인커라의 편안한 학습 공간">
-      <li><a href="k2F.html">휴식과 학습의 자리 인커라<br><br></a></li>
-      <img src="images/dasol.jpg" width="400" height="300" alt="다솔관의 학습 공간">
-      <li><a href="dasol.html">배움의 장 다솔관<br><br></a></li>
-    </ol>
+      <main class="home-main">
+        <h2>탐험할 장소</h2>
+        <ol class="place-list">
+          <li class="place-card place-card-cafe">
+            <img src="images/cafe.jpg" alt="카페 멘사의 편안한 앉는 자리">
+            <a href="cafeMensa.html">편하게 먹을 수 있는 카페 멘사<span>먹고 쉬어 가는 자리</span></a>
+          </li>
+          <li class="place-card place-card-k2f">
+            <img src="images/k2F.jpg" alt="인커라의 편안한 학습 공간">
+            <a href="k2F.html">휴식과 학습의 자리 인커라<span>집중과 휴식이 만나는 곳</span></a>
+          </li>
+          <li class="place-card place-card-dasol">
+            <img src="images/dasol.jpg" alt="다솔관의 학습 공간">
+            <a href="dasol.html">배움의 장 다솔관<span>배우고 만들어 보는 곳</span></a>
+          </li>
+        </ol>
+      </main>
+    </div>
   </body>
 </html>

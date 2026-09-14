@@ -4,37 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>카페 멘사</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header>
-    <p><a href="index.html">← 핫스팟 첫 화면</a></p>
+<body class="cafe-page">
+<div class="site-shell">
+    <header class="site-header">
+    <p class="eyebrow"><a href="index.html">← 핫스팟 첫 화면</a></p>
+    <p class="page-number">CAMPUS MUSEUM / 02</p>
     <h1>편하게 먹을 수 있는 카페 멘사</h1>
-    <p>음식을 맛있게 먹을 수 있는 장소</p>
+    <p class="lead">음식을 맛있게 먹을 수 있는 장소</p>
     </header>
 
-    <main>
-    <img src="images/cafe.jpg" width="400" height="300" alt="카페 멘사의 편안한 앉는 자리">
+    <main class="place-main">
+    <img class="place-image" src="images/cafe.jpg" alt="카페 멘사의 편안한 앉는 자리">
 
-    <h2>이 장소가 의미 있는 이유</h2>
+    <section class="story-section"><h2>이 장소가 의미 있는 이유</h2>
     <p>바깥에서 먹을 자리가 없을 때 음식을 포장해서 여기서 음식을 즐길 수 있었습니다.
         <br>또한 공강 시간에 쉽게 찾아와서 휴식할 수 있는 장소이기도 합니다.
-    </p>
+    </p></section>
 
-    <h2>찾아가는 방법</h2>
+    <section class="story-section"><h2>찾아가는 방법</h2>
     <p>김수환관 1층 정문에서 엘레베이터가 있는 로비에서 왼쪽으로 계속 가면 찾을 수 있습니다.</p>
-    <p><a href="https://naver.me/F75zgO66"
+    <p><a class="map-link" href="https://naver.me/F75zgO66"
         target="_blank" rel="noopener">온라인 지도에서 위치 확인</a></p>
+    </section>
 
-    <h2>여기에서 해볼 것</h2>
+    <section class="story-section"><h2>여기에서 해볼 것</h2>
     <ul>
         <li>맛있는 음식 포장해서 카페 멘사에서 즐기기</li>
         <li>카페 멘사에서 편안한 시간 보내기</li>
-    </ul>
+    </ul></section>
     </main>
 
-    <nav aria-label="장소 페이지 이동">
+    <nav class="page-nav" aria-label="장소 페이지 이동">
         <a href="dasol.html">← 이전 장소</a>
         <a href="k2F.html">다음 장소 →</a>
     </nav>
+</div>
 </body>
 </html>
