@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>두 탭으로 보는 작은 데이터 이야기</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            color: #17223b;
+            background: #f7f8fc;
+            font: 16px/1.7 system-ui, sans-serif;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: 1px solid #7455e9;
+            border-radius: 10px;
+            background: white;
+            color: #30205c;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        button[aria-pressed="true"] {
+            background: #6544d7;
+            color: white;
+        }
+
+        button:focus-visible {
+            outline: 3px solid #c56200;
+            outline-offset: 3px;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 300px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .tabs button {
+                flex: 1;
+            }
+
+            .chart-box {
+                height: 260px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>건강 관리 하는 법</h1>
+    <p>이 자료는 건강 관리에 대한 정보를 제공합니다.</p>
+    <div class="tabs" role="group" aria-label="그래프 선택">
+        <button type="button" data-panel="visitors" aria-controls="visitors" aria-pressed="true">건강 상태</button>
+        <button type="button" data-panel="satisfaction" aria-controls="satisfaction" aria-pressed="false">건강 관리 방법</button>
+    </div>
+    <section id="visitors" class="panel" aria-labelledby="visitors-title">
+        <h2 id="visitors-title">연령별 건강 상태 점수</h2>
+        <div class="chart-box"><canvas id="visitors-chart" role="img" aria-label="3월 120명, 4월 180명, 5월 150명"></canvas>
+        </div>
+        <p><strong>의미:</strong> 연령대별 자신의 건강 상태 평균 점수를 비교합니다.</p>
+        <p><strong>해석:</strong> 연령대가 높아질 수록 건강 상태 점수가 낮아지는 경향이 있습니다.
+         특히 10대 -> 30대로 갈 때와 50대 -> 60대로 갈 때 점수폭이 눈에 띄게 낮아집니다.</p>
+        <p>출처: KOSIS 국가통계포털</p>
+    </section>
+    <section id="satisfaction" class="panel" aria-labelledby="satisfaction-title" hidden>
+        <h2 id="satisfaction-title">연령별 건강 관리 실천율</h2>
+        <div class="chart-box"><canvas id="satisfaction-chart" role="img"
+                aria-label="3월 3.8점, 4월 4.1점, 5월 4.0점"></canvas></div>
+        <p><strong>의미:</strong> 연령대별 건강 관리 방법의 실천율을 비교합니다.</p>
+        <p><strong>해석:</strong> 20~39세는 아침 식사 실천율이 낮고, 40대는 규칙적 운동 실천율이 가장 낮아 연령별 취약 습관이 다르게 나타납니다.<br>
+            적정 수면 실천율은 13~19세를 제외한 전 연령대에서 비교적 안정적입니다.</p>
+        <p>출처: KOSIS 국가통계포털</p>
+    </section>
+    <p id="status" role="status"></p>
+    <script src="./statistics.js"></script>
+</body>
+</html>
