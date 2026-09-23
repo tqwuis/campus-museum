@@ -31,6 +31,21 @@
             margin: 20px 0;
         }
 
+        .page-link {
+            margin: 14px 0;
+        }
+
+        .page-link a {
+            color: #6544d7;
+            font-weight: 700;
+            text-underline-offset: 4px;
+        }
+
+        .page-link a:focus-visible {
+            outline: 3px solid #c56200;
+            outline-offset: 3px;
+        }
+
         button {
             padding: 10px 16px;
             border: 1px solid #7455e9;
@@ -79,6 +94,7 @@
 <body>
     <h1>건강 관리 하는 법</h1>
     <p>이 자료는 건강 관리에 대한 정보를 제공합니다.</p>
+    <p class="page-link"><a href="index.html">캠퍼스 핫스팟으로 돌아가기</a></p>
     <div class="tabs" role="group" aria-label="그래프 선택">
         <button type="button" data-panel="visitors" aria-controls="visitors" aria-pressed="true">건강 상태</button>
         <button type="button" data-panel="satisfaction" aria-controls="satisfaction" aria-pressed="false">건강 관리 방법</button>
