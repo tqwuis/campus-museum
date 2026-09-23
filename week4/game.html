@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Black Hole Survival</title>
+	<style>
+		:root {
+			color-scheme: dark;
+			--space: #050816;
+			--panel: rgba(12, 19, 43, 0.9);
+			--line: rgba(157, 190, 255, 0.28);
+			--text: #eaf2ff;
+			--muted: #9eafd0;
+			--accent: #77e8ff;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			display: grid;
+			min-width: 320px;
+			min-height: 100vh;
+			margin: 0;
+			padding: 24px 16px;
+			place-items: center;
+			color: var(--text);
+			background: radial-gradient(circle at top, #182454, var(--space) 58%);
+			font: 16px/1.5 system-ui, sans-serif;
+		}
+
+		.game-container { width: min(100%, 800px); }
+
+		.game-heading { margin-bottom: 14px; }
+		.game-heading p { margin: 0; color: var(--muted); }
+		.page-link { margin-top: 8px !important; }
+		.page-link a { color: var(--accent); text-underline-offset: 4px; }
+		.page-link a:hover { color: #b8f5ff; }
+		.page-link a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+		h1 { margin: 0 0 4px; font-size: clamp(1.4rem, 5vw, 2.2rem); letter-spacing: 0.08em; }
+
+		.game-board {
+			position: relative;
+			overflow: hidden;
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			background: #02040d;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+		}
+
+		canvas {
+			display: block;
+			width: 100%;
+			max-width: 800px;
+			aspect-ratio: 16 / 9;
+			height: auto;
+			touch-action: none;
+		}
+
+		.game-ui {
+			position: absolute;
+			top: 16px;
+			left: 18px;
+			pointer-events: none;
+		}
+
+		.score-label { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.18em; }
+		.score-value { color: var(--accent); font-size: 1.8rem; font-weight: 700; }
+
+		.screen {
+			position: absolute;
+			inset: 0;
+			display: grid;
+			padding: 24px;
+			place-items: center;
+			text-align: center;
+			background: rgba(3, 7, 20, 0.72);
+		}
+
+		.screen[hidden] { display: none; }
+		.screen-panel { max-width: 360px; padding: 28px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); backdrop-filter: blur(8px); }
+		.screen h2 { margin: 0 0 10px; color: var(--accent); font-size: clamp(1.3rem, 5vw, 2rem); letter-spacing: 0.08em; }
+		.screen p { margin: 8px 0 20px; color: var(--muted); }
+		.screen button { padding: 10px 26px; border: 1px solid var(--accent); border-radius: 999px; color: #03101a; background: var(--accent); font: inherit; font-weight: 700; cursor: pointer; }
+		.screen button:hover { background: #b8f5ff; }
+		.screen button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+		@media (max-width: 520px) {
+			body { padding: 16px 10px; }
+			.game-ui { top: 10px; left: 12px; }
+			.score-value { font-size: 1.5rem; }
+			.screen-panel { padding: 22px 18px; }
+		}
+	</style>
+</head>
+<body>
+	<main class="game-container">
+		<header class="game-heading">
+			<h1>BLACK HOLE SURVIVAL</h1>
+			<p>우주선을 움직여 블랙홀과 운석을 피하세요.</p>
+			<p class="page-link"><a href="index.html">캠퍼스 핫스팟으로 돌아가기</a></p>
+		</header>
+
+		<section class="game-board" aria-label="블랙홀 우주선 생존 게임">
+			<div class="game-ui">
+				<div class="score-label">SCORE</div>
+				<div id="score" class="score-value">0</div>
+			</div>
+
+			<canvas id="gameCanvas" width="800" height="450">Canvas를 지원하는 브라우저에서 게임을 플레이할 수 있습니다.</canvas>
+
+			<div id="startScreen" class="screen">
+				<div class="screen-panel">
+					<h2>BLACK HOLE SURVIVAL</h2>
+					<p>화면을 누른 상태로 드래그해 우주선을 움직이세요.</p>
+					<button id="startButton" type="button">START</button>
+				</div>
+			</div>
+
+			<div id="gameOverScreen" class="screen" hidden>
+				<div class="screen-panel">
+					<h2>GAME OVER</h2>
+					<p>SCORE <strong id="finalScore">0</strong></p>
+					<button id="retryButton" type="button">RETRY</button>
+				</div>
+			</div>
+		</section>
+	</main>
+	<script src="game.js"></script>
+</body>
+</html>
