@@ -66,7 +66,7 @@ function drawCharts(healthRows, managementRows) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, title: { display: true, text: "점수" } } },
+            scales: { y: { beginAtZero: true, min: 4, max: 7, title: { display: true, text: "점수" } } },
             plugins: { tooltip: { mode: "index", intersect: false } }
         }
     });
