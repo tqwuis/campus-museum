@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나의 캠퍼스 카페 취향 · 카페 밸런스 게임</title>
+<style>
+/* 크림색 메뉴판과 커피색 포인트 */
+:root { color-scheme: light; --accent: #795039; --coffee-ink: #392b24; --cafe-border: #e3d5c4; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px; background: #f5eee3; color: var(--coffee-ink); font-family: system-ui, sans-serif; line-height: 1.65; }
+main { max-width: 760px; margin: auto; }
+section, header { padding: 24px; margin-bottom: 18px; background: #fffdf8; border: 1px solid var(--cafe-border); border-radius: 18px; }
+header { border-top: 6px solid var(--accent); background: linear-gradient(135deg, #fffdf8, #eee0cd); }
+h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); line-height: 1.25; }
+h2 { font-size: 1.3rem; }
+.eyebrow { color: var(--accent); font-weight: 750; letter-spacing: .06em; }
+button, input, select { font: inherit; border-radius: 10px; padding: 10px 14px; max-width: 100%; }
+button { border: 1px solid #cdb89f; background: #f7eddf; color: var(--coffee-ink); cursor: pointer; }
+button:hover:not(:disabled) { box-shadow: 0 3px 10px #79503925; }
+button.primary { background: var(--accent); color: white; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #b76a00; outline-offset: 3px; }
+input, select { border: 1px solid #aa9179; background: #fffdf8; color: var(--coffee-ink); }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
+.choices button { min-height: 88px; }
+.choices button[aria-pressed="true"] { background: var(--accent); color: white; border: 3px solid var(--coffee-ink); }
+progress { width: 100%; accent-color: var(--accent); }
+.notice { padding: 12px; border-radius: 10px; background: #fff3d6; }
+.muted { color: #716151; font-size: .92rem; }
+.recommendation { padding: 16px; margin: 18px 0; border-left: 4px solid #b98043; background: #f5e8d5; border-radius: 0 12px 12px 0; }
+.recommendation h3, .recommendation p { margin: 4px 0; }
+.record { padding: 16px 0; border-bottom: 1px dashed var(--cafe-border); overflow-wrap: anywhere; }
+#result-owner, #comparison { overflow-wrap: anywhere; }
+.record p { margin: 5px 0; }
+[hidden] { display: none !important; }
+@media (max-width: 480px) { body { padding: 12px; } section, header { padding: 18px; } .choices { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="eyebrow">CAMPUS CAFÉ · TASTE MENU</p>
+  <h1>나의 캠퍼스 카페 취향</h1>
+  <p>공강부터 과제 끝난 오후까지, 여섯 번의 선택으로 알아보는 나의 카페 스타일. 익숙한 한 잔과 새로운 맛 사이에서 당신은 어떤 선택을 하나요?</p>
+  <p>같은 기기에서 친구와 번갈아 참여하고, 서로의 카페 취향을 비교해 보세요.</p>
+  <p class="muted">정식 성격 진단이 아닌 놀이입니다. 이 브라우저의 기록만 보관하며, 다른 기기의 기록은 합쳐지지 않습니다.</p>
+</header>
+<p id="notice" class="notice" role="status" hidden></p>
+<section id="home">
+  <h2>내 카페 취향 주문하기</h2>
+  <label for="nickname">별명 (선택, 20자까지)</label>
+  <input id="nickname" maxlength="20" placeholder="비워 두어도 좋아요">
+  <div class="actions">
+    <button id="start" class="primary">새로 시작</button>
+    <button id="resume" disabled>이어하기</button>
+  </div>
+  <p class="muted">새로 시작하면 진행 중인 답변을 새 답변으로 바꿉니다. 완료 기록은 유지됩니다.</p>
+</section>
+<section id="quiz" hidden aria-labelledby="question">
+  <p id="step" class="eyebrow"></p>
+  <progress id="progress" max="6" value="0" aria-label="답한 문항 수"></progress>
+  <h2 id="question" tabindex="-1"></h2>
+  <div id="choices" class="choices"></div>
+  <div class="actions">
+    <button id="previous">이전</button>
+    <button id="next" class="primary" disabled>다음</button>
+  </div>
+</section>
+<section id="result" hidden>
+  <p class="eyebrow">MY CAFÉ TASTE CARD</p>
+  <h2 id="result-title" tabindex="-1"></h2>
+  <p id="result-description"></p>
+  <aside class="recommendation" aria-labelledby="recommendation-heading">
+    <h3 id="recommendation-heading">다음 카페에서는 이렇게</h3>
+    <p id="result-recommendation"></p>
+  </aside>
+  <p class="muted">새로운 경험을 고른 횟수에 따라 0~2개는 단골석 지킴이, 3개는 취향 블렌더, 4~6개는 카페 탐험가입니다. 어느 쪽이든 나만의 취향이에요.</p>
+  <p id="result-owner"></p>
+  <ul id="result-answers"></ul>
+  <label for="friend">이 기록과 비교할 친구</label>
+  <select id="friend"><option value="">친구를 선택하세요</option></select>
+  <div id="comparison" aria-live="polite"></div>
+  <div class="actions"><button id="next-person" class="primary">다음 친구 도전</button></div>
+</section>
+<section>
+  <h2 id="cafe-history-count">저장된 결과 0개</h2>
+  <p class="muted">이 브라우저에서 참여한 최근 20개의 기록입니다. 결과 보기를 눌러 다시 비교할 수 있습니다.</p>
+  <div id="cafe-history"></div>
+</section>
+<section>
+  <h2>내 데이터 관리</h2>
+  <div class="actions">
+    <button id="inspect">내 저장 데이터 보기</button>
+    <button id="delete-draft">진행 중인 답변 삭제</button>
+    <button id="delete-all">게임 데이터 전체 삭제</button>
+  </div>
+  <div id="data-view" hidden>
+    <h3>진행 중인 답변 · sessionStorage</h3><div id="cafe-draft-data"></div>
+    <h3>완료 기록 · localStorage</h3><div id="cafe-history-data"></div>
+  </div>
+</section>
+</main>
+<script>
+// 질문 ID·선택의 의미·분류 규칙이 바뀌면 CAFE_QUIZ_VERSION도 갱신합니다.
+const CAFE_QUIZ_VERSION = "campus-cafe-v1";
+const CAFE_QUESTIONS = [
+  { id: "cafe-choice", title: "공강에 친구와 갈 카페를 내가 고른다면?", choices: ["맛과 분위기가 익숙한 단골 카페", "아직 가 보지 않은 학교 앞 신상 카페"] },
+  { id: "reward-drink", title: "과제를 끝내고 나에게 음료 한 잔을 선물한다면?", choices: ["언제 마셔도 만족스러운 최애 메뉴", "오늘 처음 발견한 시즌 한정 메뉴"] },
+  { id: "cafe-seat", title: "자주 가는 카페에 새로운 공간이 생겼다면?", choices: ["평소 좋아하던 익숙한 자리에 앉기", "새로 열린 공간에 자리 잡아 보기"] },
+  { id: "shared-dessert", title: "팀플을 마치고 친구와 디저트를 나눠 먹는다면?", choices: ["이미 먹어 봐서 맛을 아는 케이크", "맛이 궁금한 독특한 조합의 디저트"] },
+  { id: "sold-out-beans", title: "주문하려던 커피의 원두가 다 떨어졌다고 한다면?", choices: ["원래 마시려던 것과 맛이 비슷한 메뉴를 고른다", "이참에 평소 마셔 보지 않은 새로운 메뉴를 고른다"] },
+  { id: "bean-tasting", title: "카페에서 쉬려는데 짧은 원두 시음 행사가 열린다면?", choices: ["주문한 음료를 즐기며 원래대로 쉬기", "시음에 참여해 낯선 원두 맛 알아보기"] }
+];
+const CAFE_PROFILES = {
+  regular: {
+    title: "☕ 단골석 지킴이",
+    description: "익숙한 맛과 공간에서 편안함을 찾는 편입니다. 좋아하는 한 잔과 늘 앉던 자리가 카페 시간을 기분 좋게 만들어 줘요.",
+    recommendation: "좋아하는 자리와 메뉴를 친구에게 소개하며 나만의 단골 코스를 함께 즐겨 보세요."
+  },
+  blender: {
+    title: "🍪 취향 블렌더",
+    description: "익숙한 즐거움과 새로운 경험을 함께 즐기는 편입니다. 편안한 취향을 지키면서도 궁금한 맛에는 마음을 열어 두는군요.",
+    recommendation: "단골 카페에서 새로운 디저트를 곁들이는 식으로 익숙함에 작은 변화를 더해 보세요."
+  },
+  explorer: {
+    title: "🧭 카페 탐험가",
+    description: "처음 만나는 공간과 맛에 호기심이 생기는 편입니다. 새로운 메뉴와 낯선 카페가 일상에 작은 즐거움을 더해 줘요.",
+    recommendation: "아직 안 가 본 학교 근처 카페에서 대표 메뉴를 맛보고, 친구와 한 줄 감상을 나눠 보세요."
+  }
+};
+// 기존 키는 유지합니다. 예전 질문의 기록은 버전을 검사해 표시·비교에서 제외합니다.
+const CAFE_DRAFT_KEY = "week5.balance.draft";
+const CAFE_HISTORY_KEY = "week5.balance.history";
+const MAX_CAFE_RECORDS = 20;
+const $ = function (selector) { return document.querySelector(selector); };
+
+// 저장을 못 하는 미리보기에서도 게임은 동작합니다. 영구 저장 성공으로 표시하지 않습니다.
+const memory = { sessionStorage: {}, localStorage: {} };
+const unsaved = { sessionStorage: new Set(), localStorage: new Set() };
+function inform(message) {
+  $("#notice").hidden = false;
+  $("#notice").textContent = message;
+}
+function readJSON(area, key, fallback) {
+  let raw;
+  try {
+    raw = window[area].getItem(key);
+    // 읽기는 되지만 쓰기가 실패한 경우도 현재 실행의 변경 내용은 유지합니다.
+    if (unsaved[area].has(key)) raw = memory[area][key] ?? null;
+  } catch (error) {
+    inform("저장소를 사용할 수 없어 이번 실행 중에만 기억합니다. 실제 저장·복원은 새 창 또는 배포 페이지에서 확인하세요.");
+    raw = memory[area][key] ?? null;
+  }
+  if (raw === null) return fallback;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    inform("저장 데이터의 JSON 형식이 잘못되어 기본값으로 시작합니다.");
+    return fallback;
+  }
+}
+function writeJSON(area, key, value) {
+  const raw = JSON.stringify(value);
+  memory[area][key] = raw;
+  try {
+    window[area].setItem(key, raw);
+    unsaved[area].delete(key);
+  } catch (error) {
+    unsaved[area].add(key);
+    inform("저장하지 못했습니다. 지금 게임은 계속할 수 있지만 새로고침하면 변경 내용이 사라질 수 있습니다.");
+  }
+}
+function removeKey(area, key) {
+  delete memory[area][key];
+  try {
+    window[area].removeItem(key);
+    unsaved[area].delete(key);
+  } catch (error) {
+    unsaved[area].add(key);
+    inform("저장소에 접근할 수 없어 실제 삭제를 확인하지 못했습니다. 이번 실행의 화면은 초기화했습니다.");
+  }
+}
+function classifyCafeProfile(answers) {
+  // 안정 선택은 0점, 도전 선택은 1점. 0~2점은 단골석, 3점은 블렌더, 4~6점은 탐험가입니다.
+  let adventureCount = 0;
+  for (const question of CAFE_QUESTIONS) adventureCount += answers[question.id];
+  if (adventureCount * 2 === CAFE_QUESTIONS.length) return "blender";
+  if (adventureCount * 2 > CAFE_QUESTIONS.length) return "explorer";
+  return "regular";
+}
+function validAnswers(answers, complete) {
+  if (!answers || typeof answers !== "object" || Array.isArray(answers)) return false;
+  for (const id of Object.keys(answers)) {
+    if (!CAFE_QUESTIONS.some(function (q) { return q.id === id; })) return false;
+    if (answers[id] !== 0 && answers[id] !== 1) return false;
+  }
+  return !complete || CAFE_QUESTIONS.every(function (q) { return Object.hasOwn(answers, q.id); });
+}
+function validBase(value) {
+  return value && typeof value === "object" && value.version === CAFE_QUIZ_VERSION &&
+    typeof value.id === "string" && value.id.length > 0 &&
+    typeof value.nickname === "string" && value.nickname.length <= 20;
+}
+function loadDraft() {
+  const value = readJSON("sessionStorage", CAFE_DRAFT_KEY, null);
+  if (value === null) return null;
+  if (validBase(value) && validAnswers(value.answers, false) &&
+      Number.isInteger(value.questionIndex) && value.questionIndex >= 0 && value.questionIndex < CAFE_QUESTIONS.length) return value;
+  inform("임시 답변의 형식 또는 질문 버전이 달라 새로 시작합니다.");
+  removeKey("sessionStorage", CAFE_DRAFT_KEY);
+  return null;
+}
+function loadHistory() {
+  const value = readJSON("localStorage", CAFE_HISTORY_KEY, []);
+  if (!Array.isArray(value)) {
+    inform("완료 기록은 배열이어야 합니다. 빈 목록으로 복구합니다.");
+    return [];
+  }
+  const valid = value.filter(function (record) {
+    return validBase(record) && validAnswers(record.answers, true) &&
+      typeof record.completedAt === "string" && Number.isFinite(Date.parse(record.completedAt)) &&
+      Object.hasOwn(CAFE_PROFILES, record.type) && record.type === classifyCafeProfile(record.answers);
+  });
+  if (valid.length !== value.length) inform("형식이 잘못되었거나 다른 질문 버전인 기록은 표시·비교에서 제외했습니다.");
+  return valid.slice(-MAX_CAFE_RECORDS);
+}
+let cafeRecords = loadHistory();
+let activeDraft = loadDraft();
+let selectedRecordId = null;
+// 완료 기록이 있으면 같은 참여의 임시 답변은 재제출하지 않습니다.
+if (activeDraft && cafeRecords.some(function (record) { return record.id === activeDraft.id; })) {
+  activeDraft = null;
+  removeKey("sessionStorage", CAFE_DRAFT_KEY);
+}
+function saveDraft() { writeJSON("sessionStorage", CAFE_DRAFT_KEY, activeDraft); }
+function makeText(tag, text) {
+  const element = document.createElement(tag);
+  element.textContent = text;
+  return element;
+}
+function action(label, callback) {
+  const button = makeText("button", label);
+  button.type = "button";
+  button.addEventListener("click", callback);
+  return button;
+}
+function answerSummary(record) {
+  const list = document.createElement("ul");
+  for (const question of CAFE_QUESTIONS) {
+    const choice = record.answers[question.id];
+    const label = choice === undefined ? "아직 선택하지 않음" : question.choices[choice];
+    list.append(makeText("li", question.title + " → " + label));
+  }
+  return list;
+}
+function goHome() {
+  $("#home").hidden = false;
+  $("#quiz").hidden = true;
+  $("#result").hidden = true;
+  selectedRecordId = null;
+  $("#comparison").replaceChildren();
+  $("#friend").replaceChildren(makeText("option", "친구를 선택하세요"));
+  $("#nickname").value = "";
+  renderHistory();
+}
+function renderQuestion() {
+  $("#home").hidden = true;
+  $("#result").hidden = true;
+  $("#quiz").hidden = false;
+  const question = CAFE_QUESTIONS[activeDraft.questionIndex];
+  $("#step").textContent = (activeDraft.questionIndex + 1) + " / " + CAFE_QUESTIONS.length;
+  $("#progress").max = CAFE_QUESTIONS.length;
+  $("#progress").value = Object.keys(activeDraft.answers).length;
+  $("#question").textContent = question.title;
+  $("#choices").replaceChildren();
+  question.choices.forEach(function (label, index) {
+    const button = action(label, function () {
+      activeDraft.answers[question.id] = index;
+      saveDraft();
+      renderQuestion();
+      $("#choices").children[index].focus();
+      renderData();
+    });
+    button.setAttribute("aria-pressed", String(activeDraft.answers[question.id] === index));
+    $("#choices").append(button);
+  });
+  $("#previous").disabled = activeDraft.questionIndex === 0;
+  $("#next").disabled = activeDraft.answers[question.id] === undefined;
+  $("#next").textContent = activeDraft.questionIndex === CAFE_QUESTIONS.length - 1 ? "결과 완성" : "다음";
+}
+function finish() {
+  if (!activeDraft || !validAnswers(activeDraft.answers, true)) return;
+  // 다시 읽어서 다른 탭이 저장한 최근 기록도 반영합니다.
+  cafeRecords = loadHistory();
+  const record = { id: activeDraft.id, version: CAFE_QUIZ_VERSION, nickname: activeDraft.nickname,
+    answers: { ...activeDraft.answers }, type: classifyCafeProfile(activeDraft.answers), completedAt: new Date().toISOString() };
+  if (!cafeRecords.some(function (item) { return item.id === record.id; })) {
+    cafeRecords.push(record);
+    cafeRecords = cafeRecords.slice(-MAX_CAFE_RECORDS);
+    writeJSON("localStorage", CAFE_HISTORY_KEY, cafeRecords);
+  }
+  activeDraft = null;
+  removeKey("sessionStorage", CAFE_DRAFT_KEY);
+  renderHistory();
+  showResult(record.id);
+}
+function showResult(id) {
+  const record = cafeRecords.find(function (item) { return item.id === id; });
+  if (!record) { goHome(); return; }
+  selectedRecordId = id;
+  $("#home").hidden = true;
+  $("#quiz").hidden = true;
+  $("#result").hidden = false;
+  $("#result-title").textContent = CAFE_PROFILES[record.type].title;
+  $("#result-description").textContent = CAFE_PROFILES[record.type].description;
+  $("#result-recommendation").textContent = CAFE_PROFILES[record.type].recommendation;
+  $("#result-owner").textContent = record.nickname + "의 선택 · " + new Date(record.completedAt).toLocaleString("ko-KR");
+  $("#result-answers").replaceChildren(...answerSummary(record).children);
+  $("#friend").replaceChildren();
+  const empty = makeText("option", "친구를 선택하세요");
+  empty.value = "";
+  $("#friend").append(empty);
+  for (const friend of cafeRecords) {
+    if (friend.id === id) continue;
+    const option = makeText("option", friend.nickname + " · " + new Date(friend.completedAt).toLocaleTimeString("ko-KR"));
+    option.value = friend.id;
+    $("#friend").append(option);
+  }
+  $("#comparison").replaceChildren();
+  $("#result-title").focus();
+}
+function renderData() {
+  if ($("#data-view").hidden) return;
+  const draftBox = $("#cafe-draft-data");
+  draftBox.replaceChildren();
+  if (!activeDraft) draftBox.append(makeText("p", "진행 중인 답변이 없습니다."));
+  else {
+    draftBox.append(makeText("p", activeDraft.nickname + " · 현재 " + (activeDraft.questionIndex + 1) + "번 문항"), answerSummary(activeDraft));
+  }
+  const box = $("#cafe-history-data");
+  box.replaceChildren();
+  if (cafeRecords.length === 0) box.append(makeText("p", "완료 기록이 없습니다."));
+  for (const record of cafeRecords) {
+    const card = makeText("div", "");
+    card.className = "record";
+    card.append(makeText("p", record.nickname + " · " + CAFE_PROFILES[record.type].title + " · " +
+      new Date(record.completedAt).toLocaleString("ko-KR")), answerSummary(record));
+    card.append(action("이 기록 삭제", function () { deleteRecord(record.id); }));
+    box.append(card);
+  }
+}
+function renderHistory() {
+  $("#cafe-history-count").textContent = "저장된 결과 " + cafeRecords.length + "개";
+  $("#resume").disabled = activeDraft === null;
+  const box = $("#cafe-history");
+  box.replaceChildren();
+  if (cafeRecords.length === 0) box.append(makeText("p", "아직 기록이 없어요. 첫 번째로 도전해 보세요!"));
+  for (const record of [...cafeRecords].reverse()) {
+    const card = makeText("div", "");
+    card.className = "record";
+    card.append(makeText("p", record.nickname + " · " + CAFE_PROFILES[record.type].title));
+    const buttons = makeText("div", "");
+    buttons.className = "actions";
+    buttons.append(action("결과 보기", function () { showResult(record.id); }),
+      action("이 기록 삭제", function () { deleteRecord(record.id); }));
+    card.append(buttons);
+    box.append(card);
+  }
+  renderData();
+}
+function deleteRecord(id) {
+  cafeRecords = loadHistory().filter(function (record) { return record.id !== id; });
+  writeJSON("localStorage", CAFE_HISTORY_KEY, cafeRecords);
+  if (selectedRecordId === id) goHome();
+  else if (selectedRecordId) showResult(selectedRecordId);
+  renderHistory();
+}
+$("#start").addEventListener("click", function () {
+  const nickname = $("#nickname").value.trim().slice(0, 20) || "참가자 " + (cafeRecords.length + 1);
+  activeDraft = { id: crypto.randomUUID(), version: CAFE_QUIZ_VERSION, nickname: nickname, questionIndex: 0, answers: {} };
+  saveDraft();
+  renderHistory();
+  renderQuestion();
+  $("#question").focus();
+});
+$("#resume").addEventListener("click", function () { if (activeDraft) renderQuestion(); });
+$("#previous").addEventListener("click", function () {
+  if (!activeDraft || activeDraft.questionIndex === 0) return;
+  activeDraft.questionIndex -= 1; saveDraft(); renderQuestion(); renderData(); $("#question").focus();
+});
+$("#next").addEventListener("click", function () {
+  if (!activeDraft || activeDraft.answers[CAFE_QUESTIONS[activeDraft.questionIndex].id] === undefined) return;
+  if (activeDraft.questionIndex === CAFE_QUESTIONS.length - 1) { finish(); return; }
+  activeDraft.questionIndex += 1; saveDraft(); renderQuestion(); renderData(); $("#question").focus();
+});
+$("#friend").addEventListener("change", function () {
+  const me = cafeRecords.find(function (record) { return record.id === selectedRecordId; });
+  const friend = cafeRecords.find(function (record) { return record.id === $("#friend").value; });
+  const box = $("#comparison");
+  box.replaceChildren();
+  if (!me || !friend) return;
+  let same = 0;
+  const list = document.createElement("ul");
+  for (const question of CAFE_QUESTIONS) {
+    const matches = me.answers[question.id] === friend.answers[question.id];
+    if (matches) same += 1;
+    list.append(makeText("li", (matches ? "같아요 · " : "달라요 · ") + question.title + " : " +
+      question.choices[me.answers[question.id]] + " / " + question.choices[friend.answers[question.id]]));
+  }
+  box.append(makeText("p", CAFE_QUESTIONS.length + "개 중 " + same + "개 일치"), list);
+});
+function deleteDraft() {
+  activeDraft = null;
+  removeKey("sessionStorage", CAFE_DRAFT_KEY);
+  goHome();
+}
+$("#next-person").addEventListener("click", deleteDraft);
+$("#delete-draft").addEventListener("click", deleteDraft);
+$("#delete-all").addEventListener("click", function () {
+  activeDraft = null; cafeRecords = [];
+  removeKey("sessionStorage", CAFE_DRAFT_KEY);
+  removeKey("localStorage", CAFE_HISTORY_KEY);
+  goHome();
+});
+$("#inspect").addEventListener("click", function () {
+  cafeRecords = loadHistory(); activeDraft = loadDraft();
+  $("#data-view").hidden = false;
+  if (selectedRecordId) showResult(selectedRecordId);
+  else if (!$("#quiz").hidden) {
+    if (activeDraft) renderQuestion(); else goHome();
+  }
+  renderHistory();
+});
+renderHistory();
+</script>
+</body>
+</html>
