@@ -219,3 +219,50 @@ HTML, CSS, JavaScript를 사용해서 웹페이지 안에서 실행할 수 있�
 > 이 질문 6개를 확정해서 index.html을 수정해줘. 수정할 때는 글의 내용만 바꾸지 말고 id나 변수명 같은 것도 신경써서 바꿔야 해. 검증을 할 때 주요 검증해야 할 사항들을 정하고 그 검증 사항들이 어떻게 작동하고 있는지를 나한테 알려줘.
 
 - 직접 수정·검증한 내용: 대학생의 카페 이용 취향이라는 주제, 질문 6개, 안정·도전 기준, 결과 3종과 추천 행동을 직접 선택하고 확정했습니다. 완성 후 답안 작성 중 새로고침하고 이어하기, 새 탭에서 저장된 결과 비교하기를 직접 확인했습니다. 코드 수정과 위 표의 자동 검증은 Codex의 도움으로 수행했습니다.
+
+## 6주차 · Flask 서버 계산 실습
+
+### 실습 1 · 이미지 처리
+- Render 주소: https://campus-museum.onrender.com/
+- 휴대폰 확인 화면: ![Render 휴대폰 화면](week6/images/Render휴대폰.jpg)
+- 브라우저가 보내는 값 / 서버가 돌려주는 값: index.html과 image.js의 `formdata` / `PNG` 파일
+- 세 처리 방법의 결과: Blur 커널 15기준
+
+![grayscale](week6/images/grayscale.png)
+흑백 처리
+
+![gaussian](week6/images/gaussian.png)
+블러 처리
+
+![edge](week6/images/edge.png)
+윤곽선 처리
+
+- 크기·커널을 바꿔 측정한 시간 표:
+
+| Blur 커널 | 알고리즘 계산 시간 | 서버 처리 시간 | 왕복 시간 |
+|---:|---:|---:|---:|
+| 3 | 0.42 ms | 11.68 ms | 416.6 ms |
+| 15 | 3.23 ms | 54.66 ms | 371.6 ms |
+| 51 | 99.27 ms | 125.09 ms | 785.8 ms |
+
+### 실습 2 · 서버 TTS
+- 실행 명령과 로컬 주소: http://127.0.0.1:5000/tts
+```
+python -m flask --app tts_app run --debug --port 5000
+```
+- 사용한 모델 이름·언어·출처: `en_US-lessac-low`, `en_US-amy-low`(미국 영어), `en_GB-alan-low`(영국 영어) / [Piper Voices](https://huggingface.co/rhasspy/piper-voices)
+- 내가 정한 사용 상황과 추가한 요소: 문장을 읽어주는 캐릭터를 추가했다.
+- 서로 다른 문장 두 개의 파형·길이 확인:
+
+![test1](week6/images/test1.png)
+Hello! Welcome to our campus museum.
+
+
+
+![test2](week6/images/test2.png)
+Web programming is the best!
+
+### AI 활용
+
+- 대표 질문: “캐릭터마다 다른 목소리로 문장을 읽게 해줘.”
+- 활용 내용: 낭독 캐릭터를 추가하기 위해 Codex로 SVG·CSS 애니메이션을 만들고, WAV 음량에 입 움직임을 연결했다. 캐릭터별로 서로 다른 Piper 모델을 지정했다.
