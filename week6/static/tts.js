@@ -7,6 +7,7 @@ const result = document.querySelector("#tts-result");
 const canvas = document.querySelector("#waveform");
 const audio = document.querySelector("#audio");
 const download = document.querySelector("#wav-download");
+const creatures = window.creatureStage;
 
 function drawWaveform(buffer) {
   const pixelRatio = window.devicePixelRatio || 1;
@@ -50,15 +51,18 @@ window.addEventListener("resize", () => {
 
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
+  if (controls.disabled) return;
   const data = {
     text: document.querySelector("#text").value,
     length_scale: Number(document.querySelector("#length-scale").value)
   };
+  data.creature = creatures.begin(data.text);
   audio.pause();
   audio.removeAttribute("src");
   audio.load();
   audio.hidden = true;
   download.hidden = true;
+  download.removeAttribute("href");
   result.hidden = true;
   decodedAudio = null;
   if (audioURL) URL.revokeObjectURL(audioURL);
@@ -106,12 +110,20 @@ form.addEventListener("submit", async function (event) {
     audio.hidden = false;
     download.href = audioURL;
     download.hidden = false;
-    status.textContent = "완료 · WAV를 받아 파형을 그렸습니다.";
+    creatures.ready(buffer);
+    status.textContent = "완료 · WAV를 받아 파형을 그렸습니다. 재생하면 아래의 친구가 읽어줍니다.";
   } catch (error) {
     result.hidden = true;
     decodedAudio = null;
+    creatures.fail();
     status.textContent = "음성을 확인하지 못했습니다. " + error.message;
   } finally {
     controls.disabled = false;
   }
+});
+
+audio.addEventListener("error", () => {
+  if (!audio.error || !audio.getAttribute("src")) return;
+  creatures.fail();
+  status.textContent = "음성을 재생하지 못했습니다. 음성을 다시 만들어 주세요.";
 });

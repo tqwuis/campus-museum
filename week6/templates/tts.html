@@ -1,13 +1,31 @@
 <!doctype html>
 <html lang="ko">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>문장이 목소리가 되는 서버</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"><script src="{{ url_for('static', filename='tts.js') }}" defer></script></head>
-<body><main>
-<header><p class="eyebrow">TEXT → PYTHON MODEL → WAV → WAVEFORM</p><h1>내 문장을 파형으로 보기</h1><p>영어 문장을 보내면 Flask 서버의 Piper 모델이 WAV를 만듭니다. 소리를 들을 수 없는 실습실에서도 생성 결과를 파형과 숫자로 확인할 수 있습니다.</p></header>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>작은 낭독 친구들 · 문장이 목소리가 되는 서버</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='tts-creatures.css') }}">
+<script src="{{ url_for('static', filename='tts-creatures.js') }}" defer></script>
+<script src="{{ url_for('static', filename='tts.js') }}" defer></script>
+</head>
+<body class="tts-page"><main>
+<header><p class="eyebrow">TEXT → PYTHON MODEL → WAV → WAVEFORM</p><h1>내 문장을 파형으로 보기</h1><p>영어 문장을 보내면 Flask 서버의 Piper 모델이 WAV를 만듭니다. 소리를 들을 수 없는 실습실에서도 생성 결과를 파형과 숫자로 확인할 수 있습니다.</p><p class="reading-friends-intro"><span aria-hidden="true">✦</span> 작은 낭독 친구들 <span>문장 입력란에서 친구를 고르고, 친구마다 다른 목소리를 들어 보세요.</span></p></header>
 <section><form id="tts-form"><fieldset id="tts-controls">
 <label for="text">영어 문장 · 1~300자</label><textarea id="text" name="text" rows="5" maxlength="300" required>Hello! Welcome to our campus museum.</textarea>
+<div class="creature-picker" role="group" aria-labelledby="creature-selection" aria-describedby="creature-choice-help">
+  <p id="creature-selection">다음 문장 읽을 친구: 랜덤</p>
+  <div class="creature-choices">
+    <button id="creature-random" type="button" aria-pressed="true"><span aria-hidden="true">✦</span> 랜덤</button>
+    <button class="creature-choice" type="button" data-reader="mochi" aria-pressed="false"><span class="creature-choice-dot" aria-hidden="true"></span>모찌</button>
+    <button class="creature-choice" type="button" data-reader="popo" aria-pressed="false"><span class="creature-choice-dot" aria-hidden="true"></span>포포</button>
+    <button class="creature-choice" type="button" data-reader="kongi" aria-pressed="false"><span class="creature-choice-dot" aria-hidden="true"></span>콩이</button>
+  </div>
+  <p id="creature-choice-help">친구마다 목소리가 달라요. 선택한 목소리는 새로 음성을 만들 때 적용돼요.</p>
+  <p id="creature-status" role="status" aria-live="polite" aria-atomic="true">친구를 고르거나 랜덤으로 맡겨 보세요.</p>
+</div>
 <label for="length-scale">읽기 속도</label><select id="length-scale"><option value="0.8">조금 빠르게</option><option value="1.0" selected>보통</option><option value="1.25">천천히</option></select>
 <div class="actions"><button id="speak">Generate Speech · 음성 만들기</button></div>
-</fieldset></form><p id="tts-status" role="status">문장을 입력하고 버튼을 누르세요. 처음 요청은 모델 로딩 때문에 더 오래 걸릴 수 있습니다.</p>
+</fieldset></form><p id="tts-status" role="status">문장을 입력하고 버튼을 누르세요. 친구별 첫 요청은 모델 로딩 때문에 더 오래 걸릴 수 있습니다.</p>
 <div id="tts-result" hidden>
 <h2>서버가 만든 음성의 파형</h2>
 <canvas id="waveform" width="900" height="240" role="img" aria-label="서버가 생성한 WAV의 음량 변화를 나타내는 파형">이 브라우저는 Canvas를 지원하지 않습니다.</canvas>
@@ -16,4 +34,58 @@
 <audio id="audio" controls hidden></audio><p><a id="wav-download" download="speech.wav" hidden>WAV 내려받기</a></p>
 </div>
 <p><a href="/">이미지 실험실로 돌아가기</a></p></section>
-</main></body></html>
+</main>
+<aside id="creature-stage" data-state="idle" aria-label="작은 낭독 친구들">
+  <div id="creature-bubble" role="group" aria-labelledby="creature-bubble-name" hidden>
+    <div class="creature-bubble-heading"><strong id="creature-bubble-name"></strong><span id="creature-bubble-state"></span></div>
+    <p id="creature-quote" lang="en" tabindex="0" aria-label="읽는 영어 문장"></p>
+  </div>
+  <div id="creature-field">
+    <button class="creature" type="button" data-creature="mochi" data-name="모찌" data-state="idle" aria-label="모찌, 민트색 젤리. 다음 문장 읽을 친구로 선택" aria-pressed="false" style="--creature-x: 24px; --creature-color: #79d5bf; --creature-ink: #295c54; --creature-wash: #e7f8f1;">
+      <span class="creature-badge" hidden></span>
+      <svg class="creature-figure" viewBox="0 0 80 60" aria-hidden="true" focusable="false">
+        <ellipse class="creature-shadow" cx="40" cy="56" rx="23" ry="3" fill="#274b47" opacity=".12"/>
+        <g class="creature-body">
+          <path d="M13 42C12 30 18 17 26 10C31 6 43 5 50 8C61 12 68 29 67 42C67 52 57 55 40 55C23 55 14 52 13 42Z" fill="#94e2cc" stroke="#3f8978" stroke-width="1.5"/>
+          <path d="M19 42C24 49 52 51 64 41C65 50 57 54 40 54C24 54 17 50 19 42Z" fill="#62c6ab" opacity=".5"/>
+          <path d="M24 21C26 16 30 13 35 12" fill="none" stroke="#d9fff0" stroke-width="4" stroke-linecap="round"/>
+          <g class="creature-eyes" fill="#294c45"><ellipse cx="30" cy="34" rx="2.3" ry="3.5"/><ellipse cx="50" cy="34" rx="2.3" ry="3.5"/></g>
+          <g fill="#e991a2" opacity=".65"><ellipse cx="23" cy="41" rx="4" ry="2.3"/><ellipse cx="57" cy="41" rx="4" ry="2.3"/></g>
+          <ellipse class="creature-mouth" cx="40" cy="44" rx="3.2" ry="1.3" fill="#294c45"/>
+        </g>
+      </svg>
+      <span class="creature-name">모찌</span>
+    </button>
+    <button class="creature" type="button" data-creature="popo" data-name="포포" data-state="idle" aria-label="포포, 노란 솜뭉치. 다음 문장 읽을 친구로 선택" aria-pressed="false" style="--creature-x: 134px; --creature-color: #e9bf59; --creature-ink: #76591c; --creature-wash: #fff7d9;">
+      <span class="creature-badge" hidden></span>
+      <svg class="creature-figure" viewBox="0 0 80 60" aria-hidden="true" focusable="false">
+        <ellipse class="creature-shadow" cx="40" cy="56" rx="23" ry="3" fill="#79652f" opacity=".12"/>
+        <g class="creature-body">
+          <path d="M19 21C16 11 28 6 35 11C41 1 56 7 56 16C68 13 75 26 68 34C76 44 66 53 56 51C51 59 40 55 37 53C28 60 18 53 19 48C7 48 6 35 14 31C9 26 14 21 19 21Z" fill="#ffe39a" stroke="#bb9340" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M20 43C27 50 52 53 66 43C66 49 60 51 56 49C51 56 42 53 37 51C30 56 21 52 22 47Z" fill="#f1c965" opacity=".6"/>
+          <path d="M24 19C23 15 28 13 31 16M41 13C44 9 50 12 50 16" fill="none" stroke="#fff6d5" stroke-width="3" stroke-linecap="round"/>
+          <g class="creature-eyes" fill="#65502b"><ellipse cx="30" cy="34" rx="2.4" ry="3.2"/><ellipse cx="50" cy="34" rx="2.4" ry="3.2"/></g>
+          <g fill="#ee9c79" opacity=".7"><ellipse cx="23" cy="41" rx="4" ry="2.3"/><ellipse cx="57" cy="41" rx="4" ry="2.3"/></g>
+          <ellipse class="creature-mouth" cx="40" cy="44" rx="3.2" ry="1.3" fill="#65502b"/>
+        </g>
+      </svg>
+      <span class="creature-name">포포</span>
+    </button>
+    <button class="creature" type="button" data-creature="kongi" data-name="콩이" data-state="idle" aria-label="콩이, 보라색 콩. 다음 문장 읽을 친구로 선택" aria-pressed="false" style="--creature-x: 244px; --creature-color: #ba9be5; --creature-ink: #644881; --creature-wash: #f3ecfc;">
+      <span class="creature-badge" hidden></span>
+      <svg class="creature-figure" viewBox="0 0 80 60" aria-hidden="true" focusable="false">
+        <ellipse class="creature-shadow" cx="40" cy="56" rx="22" ry="3" fill="#544366" opacity=".12"/>
+        <g class="creature-body">
+          <path d="M25 12C37 2 56 8 61 20C65 30 57 34 61 42C64 49 53 56 40 55C23 55 15 47 15 36C15 27 17 19 25 12Z" fill="#ccb3ed" stroke="#8c6aad" stroke-width="1.5"/>
+          <path d="M19 42C27 48 45 52 59 43C62 49 52 54 40 53C28 53 20 49 19 42Z" fill="#b18bd8" opacity=".55"/>
+          <path d="M25 22C28 17 32 14 36 14" fill="none" stroke="#eee1ff" stroke-width="4" stroke-linecap="round"/>
+          <g class="creature-eyes" fill="#51405e"><ellipse cx="30" cy="34" rx="2.2" ry="3"/><ellipse cx="48" cy="34" rx="2.2" ry="3"/></g>
+          <g fill="#e69dbd" opacity=".7"><ellipse cx="23" cy="41" rx="4" ry="2.3"/><ellipse cx="55" cy="41" rx="4" ry="2.3"/></g>
+          <ellipse class="creature-mouth" cx="39" cy="44" rx="3" ry="1.3" fill="#51405e"/>
+        </g>
+      </svg>
+      <span class="creature-name">콩이</span>
+    </button>
+  </div>
+</aside>
+</body></html>
