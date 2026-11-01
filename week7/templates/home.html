@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">STEP 0 · LOGIN</p>
+  <h1>한 줄 게시판 준비</h1>
+  <p>가입하고 로그인해 보세요. 다음 단계에서 이곳에 글 목록을 붙입니다.</p>
+  {% if current_user %}<p class="notice">{{ current_user['username'] }}님, 로그인 상태입니다. 새로고침해도 유지되는지 확인하세요.</p>
+  {% else %}<p><a class="button-link" href="{{ url_for('register') }}">회원가입하기</a></p>{% endif %}
+</section>
+{% endblock %}

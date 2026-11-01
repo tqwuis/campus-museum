@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ board_title }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="{{ url_for('index') }}">{{ board_title }}</a>
+      <nav aria-label="계정 메뉴">
+        {% if current_user %}
+          <span class="current-user">{{ current_user['username'] }}님</span>
+          <form method="post" action="{{ url_for('logout') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+            <button class="text-button" type="submit">로그아웃</button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('login') }}">로그인</a>
+          <a href="{{ url_for('register') }}">회원가입</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="wrap site-footer">실습용 짧은 글 서비스 · SQLite에 저장한 글을 여러 브라우저에서 함께 봅니다.</footer>
+</body>
+</html>

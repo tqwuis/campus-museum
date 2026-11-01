@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}요청을 처리하지 못했습니다 · {{ board_title }}{% endblock %}
+{% block content %}
+<section class="panel auth-panel">
+  <p class="eyebrow">REQUEST CHECK</p>
+  <h1>요청을 처리하지 못했습니다</h1>
+  <p role="alert">{{ message }}</p>
+  <p><a class="button-link" href="{{ url_for('comments') }}">댓글 목록으로 돌아가기</a></p>
+</section>
+{% endblock %}
