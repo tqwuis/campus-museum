@@ -21,6 +21,7 @@
     <button class="creature-choice" type="button" data-reader="kongi" aria-pressed="false"><span class="creature-choice-dot" aria-hidden="true"></span>콩이</button>
   </div>
   <p id="creature-choice-help">친구마다 목소리가 달라요. 선택한 목소리는 새로 음성을 만들 때 적용돼요.</p>
+  <p id="creature-play-help">아래 친구를 누르면 쓰다듬을 수 있고, 옆으로 끌어서 자리를 옮길 수 있어요. 키보드로는 위의 선택 버튼을 사용하세요.</p>
   <p id="creature-status" role="status" aria-live="polite" aria-atomic="true">친구를 고르거나 랜덤으로 맡겨 보세요.</p>
 </div>
 <label for="length-scale">읽기 속도</label><select id="length-scale"><option value="0.8">조금 빠르게</option><option value="1.0" selected>보통</option><option value="1.25">천천히</option></select>
@@ -41,8 +42,10 @@
     <p id="creature-quote" lang="en" tabindex="0" aria-label="읽는 영어 문장"></p>
   </div>
   <div id="creature-field">
-    <button class="creature" type="button" data-creature="mochi" data-name="모찌" data-state="idle" aria-label="모찌, 민트색 젤리. 다음 문장 읽을 친구로 선택" aria-pressed="false" style="--creature-x: 24px; --creature-color: #79d5bf; --creature-ink: #295c54; --creature-wash: #e7f8f1;">
+    <button class="creature" type="button" data-creature="mochi" data-name="모찌" data-state="idle" aria-label="모찌, 민트색 젤리. 다음 문장 읽을 친구로 선택" aria-pressed="false" tabindex="-1" aria-describedby="creature-play-help" style="--creature-x: 24px; --creature-color: #79d5bf; --creature-ink: #295c54; --creature-wash: #e7f8f1;">
       <span class="creature-badge" hidden></span>
+      <span class="creature-chat" aria-hidden="true" hidden></span>
+      <span class="creature-pose">
       <svg class="creature-figure" viewBox="0 0 80 60" aria-hidden="true" focusable="false">
         <ellipse class="creature-shadow" cx="40" cy="56" rx="23" ry="3" fill="#274b47" opacity=".12"/>
         <g class="creature-body">
@@ -52,12 +55,19 @@
           <g class="creature-eyes" fill="#294c45"><ellipse cx="30" cy="34" rx="2.3" ry="3.5"/><ellipse cx="50" cy="34" rx="2.3" ry="3.5"/></g>
           <g fill="#e991a2" opacity=".65"><ellipse cx="23" cy="41" rx="4" ry="2.3"/><ellipse cx="57" cy="41" rx="4" ry="2.3"/></g>
           <ellipse class="creature-mouth" cx="40" cy="44" rx="3.2" ry="1.3" fill="#294c45"/>
+          <g class="creature-drag-face" fill="#294c45">
+            <g class="creature-face-lifted"><circle cx="30" cy="33" r="3.6"/><circle cx="50" cy="33" r="3.6"/><circle cx="31.3" cy="31.6" r="1.2" fill="#fff"/><circle cx="51.3" cy="31.6" r="1.2" fill="#fff"/><ellipse cx="40" cy="45" rx="2.8" ry="3.4"/></g>
+            <g class="creature-face-swinging" fill="none" stroke="#294c45" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M27 30.5l5 3.5-5 3.5M53 30.5l-5 3.5 5 3.5"/><path d="M36 43.5q4 4.5 8 0"/></g>
+          </g>
         </g>
       </svg>
-      <span class="creature-name">모찌</span>
+      </span>
+      <span class="creature-name">모찌<span class="creature-hearts" aria-hidden="true"></span></span>
     </button>
-    <button class="creature" type="button" data-creature="popo" data-name="포포" data-state="idle" aria-label="포포, 노란 솜뭉치. 다음 문장 읽을 친구로 선택" aria-pressed="false" style="--creature-x: 134px; --creature-color: #e9bf59; --creature-ink: #76591c; --creature-wash: #fff7d9;">
+    <button class="creature" type="button" data-creature="popo" data-name="포포" data-state="idle" aria-label="포포, 노란 솜뭉치. 다음 문장 읽을 친구로 선택" aria-pressed="false" tabindex="-1" aria-describedby="creature-play-help" style="--creature-x: 134px; --creature-color: #e9bf59; --creature-ink: #76591c; --creature-wash: #fff7d9;">
       <span class="creature-badge" hidden></span>
+      <span class="creature-chat" aria-hidden="true" hidden></span>
+      <span class="creature-pose">
       <svg class="creature-figure" viewBox="0 0 80 60" aria-hidden="true" focusable="false">
         <ellipse class="creature-shadow" cx="40" cy="56" rx="23" ry="3" fill="#79652f" opacity=".12"/>
         <g class="creature-body">
@@ -67,12 +77,19 @@
           <g class="creature-eyes" fill="#65502b"><ellipse cx="30" cy="34" rx="2.4" ry="3.2"/><ellipse cx="50" cy="34" rx="2.4" ry="3.2"/></g>
           <g fill="#ee9c79" opacity=".7"><ellipse cx="23" cy="41" rx="4" ry="2.3"/><ellipse cx="57" cy="41" rx="4" ry="2.3"/></g>
           <ellipse class="creature-mouth" cx="40" cy="44" rx="3.2" ry="1.3" fill="#65502b"/>
+          <g class="creature-drag-face" fill="#65502b">
+            <g class="creature-face-lifted"><circle cx="30" cy="33" r="3.6"/><circle cx="50" cy="33" r="3.6"/><circle cx="31.3" cy="31.6" r="1.2" fill="#fff"/><circle cx="51.3" cy="31.6" r="1.2" fill="#fff"/><ellipse cx="40" cy="45" rx="2.8" ry="3.4"/></g>
+            <g class="creature-face-swinging" fill="none" stroke="#65502b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M27 30.5l5 3.5-5 3.5M53 30.5l-5 3.5 5 3.5"/><path d="M36 43.5q4 4.5 8 0"/></g>
+          </g>
         </g>
       </svg>
-      <span class="creature-name">포포</span>
+      </span>
+      <span class="creature-name">포포<span class="creature-hearts" aria-hidden="true"></span></span>
     </button>
-    <button class="creature" type="button" data-creature="kongi" data-name="콩이" data-state="idle" aria-label="콩이, 보라색 콩. 다음 문장 읽을 친구로 선택" aria-pressed="false" style="--creature-x: 244px; --creature-color: #ba9be5; --creature-ink: #644881; --creature-wash: #f3ecfc;">
+    <button class="creature" type="button" data-creature="kongi" data-name="콩이" data-state="idle" aria-label="콩이, 보라색 콩. 다음 문장 읽을 친구로 선택" aria-pressed="false" tabindex="-1" aria-describedby="creature-play-help" style="--creature-x: 244px; --creature-color: #ba9be5; --creature-ink: #644881; --creature-wash: #f3ecfc;">
       <span class="creature-badge" hidden></span>
+      <span class="creature-chat" aria-hidden="true" hidden></span>
+      <span class="creature-pose">
       <svg class="creature-figure" viewBox="0 0 80 60" aria-hidden="true" focusable="false">
         <ellipse class="creature-shadow" cx="40" cy="56" rx="22" ry="3" fill="#544366" opacity=".12"/>
         <g class="creature-body">
@@ -82,9 +99,14 @@
           <g class="creature-eyes" fill="#51405e"><ellipse cx="30" cy="34" rx="2.2" ry="3"/><ellipse cx="48" cy="34" rx="2.2" ry="3"/></g>
           <g fill="#e69dbd" opacity=".7"><ellipse cx="23" cy="41" rx="4" ry="2.3"/><ellipse cx="55" cy="41" rx="4" ry="2.3"/></g>
           <ellipse class="creature-mouth" cx="39" cy="44" rx="3" ry="1.3" fill="#51405e"/>
+          <g class="creature-drag-face" fill="#51405e">
+            <g class="creature-face-lifted"><circle cx="30" cy="33" r="3.6"/><circle cx="48" cy="33" r="3.6"/><circle cx="31.3" cy="31.6" r="1.2" fill="#fff"/><circle cx="49.3" cy="31.6" r="1.2" fill="#fff"/><ellipse cx="39" cy="45" rx="2.8" ry="3.4"/></g>
+            <g class="creature-face-swinging" fill="none" stroke="#51405e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M27 30.5l5 3.5-5 3.5M51 30.5l-5 3.5 5 3.5"/><path d="M35 43.5q4 4.5 8 0"/></g>
+          </g>
         </g>
       </svg>
-      <span class="creature-name">콩이</span>
+      </span>
+      <span class="creature-name">콩이<span class="creature-hearts" aria-hidden="true"></span></span>
     </button>
   </div>
 </aside>
