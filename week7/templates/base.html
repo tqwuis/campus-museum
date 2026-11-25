@@ -9,10 +9,11 @@
 <body>
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="brand" href="{{ url_for('index') }}">{{ board_title }}</a>
+      <a class="brand" href="{{ url_for('comments') }}">{{ board_title }}</a>
       <nav aria-label="계정 메뉴">
         {% if current_user %}
           <span class="current-user">{{ current_user['username'] }}님</span>
+          {% if current_user['is_admin'] %}<a href="{{ url_for('admin') }}">관리 화면</a>{% endif %}
           <form method="post" action="{{ url_for('logout') }}">
             <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
             <button class="text-button" type="submit">로그아웃</button>

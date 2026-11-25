@@ -10,3 +10,4 @@
 .user-list{list-style:none;margin:0;padding:0}
 .user-list li{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #dce4ee;padding:10px 0}
 @media(max-width:600px){.report-form{grid-template-columns:1fr}.user-list li{align-items:flex-start;flex-direction:column}}
+.test-data-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.test-data-actions form{margin:0}.test-data-actions .primary{margin-top:0}.test-data-actions .delete-button{padding:10px 16px}.test-data-actions .delete-button:disabled{opacity:.5;cursor:not-allowed}.test-credentials{padding:12px 14px;border:1px solid #79ad8a;border-radius:9px;background:#edf9f1}.test-credentials p{margin:6px 0;overflow-wrap:anywhere}.test-credentials code{font-size:.95em}
