@@ -9,7 +9,13 @@
 <body>
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="brand" href="{{ url_for('comments') }}">{{ board_title }}</a>
+      <a class="brand" href="{{ url_for('comments') }}">
+        <svg class="brand-sprig" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M6 27C15 22 22 14 27 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 23C4 24 3 17 4 14C10 14 13 17 12 23ZM18 17C10 17 10 10 12 7C17 9 19 12 18 17ZM23 11C19 5 23 1 28 1C29 6 27 9 23 11ZM16 21C19 14 25 16 28 19C24 23 20 24 16 21ZM8 27C13 22 18 25 20 29C15 32 11 31 8 27Z" fill="currentColor"/>
+        </svg>
+        <span>{{ board_title }}</span>
+      </a>
       <nav aria-label="계정 메뉴">
         {% if current_user %}
           <span class="current-user">{{ current_user['username'] }}님</span>
@@ -28,6 +34,6 @@
   <main class="wrap">
     {% block content %}{% endblock %}
   </main>
-  <footer class="wrap site-footer">실습용 짧은 글 서비스 · SQLite에 저장한 글을 여러 브라우저에서 함께 봅니다.</footer>
+  <footer class="wrap site-footer">{{ board_title }} · 서로에게 건네는 작은 응원</footer>
 </body>
 </html>
